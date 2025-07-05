@@ -6,4 +6,12 @@ biblioteca* aloc_bibl();
 void init_bibl(biblioteca* b, int nr_carti, int nr_genuri, char* nume);
 void free_bibl(biblioteca* bibl);
 
+carte* aloc_carte();
+void init_carte(carte* book, char* titlu, char* autor, char* sectiune, char* editura, int nr_pag);
+void free_carte(carte* book);
+
+cititor* aloc_cititor();
+void init_cititor(cititor* reader, char* nume, int varsta, int nr_carti, int nr_permis);
+
+
 #endif
