@@ -1,11 +1,11 @@
 
-typedef struct biblioteca {
+typedef struct bibl {
     int nr_carti;  // nr actual de carti din biblioteca
     int nr_genuri_literare;   //nr de genuri literare gasit in biblioteca
     char *Nume;   //numele bibliotecii
 } biblioteca;
 
-typedef struct carte {
+typedef struct book {
     char *titlu;     // titlul cartii
     char *autor;     // autorul cartii
     char *sectiune;  // in ce sectiune / categorie se incadreaza
@@ -13,7 +13,7 @@ typedef struct carte {
     int nr_pagini;   //nr de pagini al cartii
 } carte;
 
-typedef struct cititor {
+typedef struct reader {
     char *nume;
     int varsta;
     int nr_permis_biblioteca;
