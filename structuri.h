@@ -8,17 +8,18 @@ typedef struct book {
     int index_biblioteca;
 } *carte;
 
+typedef struct sect {
+    char* nume;
+    int nr_carti;
+    carte* carti;
+} *sectiune;
+
 typedef struct bibl {
     int nr_carti;  // nr actual de carti din biblioteca
     int nr_genuri_literare;   //nr de genuri literare gasit in biblioteca
     char *Nume;   //numele bibliotecii
     carte *toate_cartile;
-    carte *Fiction;
-    carte *Roamnce;
-    carte *Fantasy;
-    carte *Classics;
-    carte *History;
-    carte *Personal_Development;
+    sectiune *sectiuni;
 } *biblioteca;
 
 typedef struct reader {

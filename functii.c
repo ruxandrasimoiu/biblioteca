@@ -3,6 +3,31 @@
 #include <stdlib.h>
 #include <string.h>
 
+sectiune aloc_sectiune() {
+    sectiune sect = malloc(sizeof(struct sect));
+    if (sect == NULL) {
+        printf ("Eroare la alocare");
+        return NULL;
+    }
+    sect->nume = malloc(20);
+    sect->carti = malloc(100 * sizeof(carte));
+    if (sect->carti == NULL) {
+        printf ("Eroare la alocare");
+        return NULL;
+    }
+    return sect;
+}
+
+void init_sectiune(sectiune sect, char* nume) {
+    sect->nr_carti = 0;
+    strcpy(sect->nume, nume);
+}
+
+void free_sectiune(sectiune sect) {
+    free(sect->nume);
+    free(sect->carti);
+    free(sect);
+}
 
 biblioteca aloc_bibl() {
     biblioteca bibl = malloc(sizeof(struct bibl));
@@ -14,19 +39,20 @@ biblioteca aloc_bibl() {
     bibl->nr_genuri_literare = 0;
     bibl->Nume = malloc(100);
     bibl->toate_cartile = malloc(1000 * sizeof(carte));
-    bibl->Fiction = malloc(100 * sizeof(carte));
-    bibl->Fantasy = malloc(100 * sizeof(carte));
-    bibl->Classics = malloc(100 * sizeof(carte));
-    bibl->Roamnce = malloc(100 * sizeof(carte));
-    bibl->History = malloc(100 * sizeof(carte));
-    bibl->Personal_Development = malloc(100 * sizeof(carte));
-
+    bibl->sectiuni = malloc(10 * sizeof(sectiune));
+    if (bibl->sectiuni == NULL) {
+        printf ("Eroare la alocare");
+        return NULL;
+    }
     return bibl;
 }
 
-void init_bibl (biblioteca bibl, int nr_carti, int nr_genuri, char *nume) {
-    bibl->nr_carti = nr_carti;
+void init_bibl (biblioteca bibl, int nr_genuri, char *nume) {
+    bibl->nr_carti = 0;
     bibl->nr_genuri_literare = nr_genuri;
+    for (int i = 0; i < bibl->nr_genuri_literare; i++) {
+        bibl->sectiuni[i] = aloc_sectiune();
+    }
     strcpy(bibl->Nume, nume);
 }
 
@@ -34,12 +60,9 @@ void free_bibl (biblioteca bibl) {
     free(bibl->Nume);
     bibl->Nume = NULL;
     free(bibl->toate_cartile);
-    free(bibl->Classics);
-    free(bibl->Fantasy);
-    free(bibl->Fiction);
-    free(bibl->History);
-    free(bibl->Personal_Development);
-    free(bibl->Roamnce);
+    for (int i = 0; i < bibl->nr_genuri_literare; i++) {
+
+    }
     free(bibl);
 }
 
@@ -129,8 +152,31 @@ void afisez_biblioteca(biblioteca bib) {
     printf("Numar genuri din biblioteca: %d\n", bib->nr_genuri_literare);
 }
 
-void adaug_carte(carte book, biblioteca bibl) {
+void afisez_toate_cartile(biblioteca bib) {
+    for (int i = 0; i < bib->nr_carti; i++) {
+        afisez_carte(bib->toate_cartile[i]);
+        printf("\n");
+    }
+}
+
+void afisez_sectune(biblioteca bib, char* sectiune) {
+    for (int i = 0; i < bib->nr_genuri_literare; i++) {
+        if(strcmp(bib->sectiuni[i]->nume, sectiune) == 0) {
+            for (int j = 0; j < bib->sectiuni[i]->nr_carti; j++) {
+                afisez_carte(bib->sectiuni[i]->carti[j]);
+            }
+        }
+    }
+}
+
+void adaug_carte(carte book, biblioteca bibl, char* sectiune) {
     bibl->toate_cartile[bibl->nr_carti] = book;
     book->index_biblioteca = bibl->nr_carti;
     bibl->nr_carti++;
+    for (int i = 0; i < bibl->nr_genuri_literare; i++) {
+        if(strcmp(bibl->sectiuni[i]->nume, sectiune) == 0) {
+            bibl->sectiuni[i]->carti[bibl->sectiuni[i]->nr_carti] = book;
+            bibl->sectiuni[i]->nr_carti++;
+        }
+    }
 }

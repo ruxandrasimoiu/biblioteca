@@ -2,8 +2,12 @@
 #define FUNCTII_H
 #include "structuri.h"
 
+sectiune aloc_sectiune();
+void init_sectiune(sectiune sect, char* nume);
+void free_sectiune(sectiune sect);
+
 biblioteca aloc_bibl();
-void init_bibl(biblioteca b, int nr_carti, int nr_genuri, char* nume);
+void init_bibl(biblioteca b, int nr_genuri, char* nume);
 void free_bibl(biblioteca bibl);
 
 carte aloc_carte();
@@ -17,8 +21,10 @@ void free_cititor(cititor reader);
 void afisez_carte(carte book);
 void afisez_cititor(cititor reader);
 void afisez_biblioteca(biblioteca bib);
+void afisez_toate_cartile(biblioteca bib);
+void afisez_sectune(biblioteca bib, char* sectiune);
 
-void adaug_carte(carte book, biblioteca bibl);
+void adaug_carte(carte book, biblioteca bibl, char* sectiune);
 
 
 #endif
