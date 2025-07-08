@@ -21,49 +21,30 @@ sectiune aloc_sectiune() {
 void init_sectiune(sectiune sect, char* nume) {
     sect->nr_carti = 0;
     strcpy(sect->nume, nume);
+    sect->nume[19] = '\0';
+}
+
+void adaug_sectiune(biblioteca bibl, char *nume) {
+    for (int i = 0; i < bibl->nr_genuri_literare; i++) {
+        if(strcmp(bibl->sectiuni[i]->nume, nume) == 0) {
+            printf("Sectiunea '%s' exista deja in biblioteca!\n", nume);
+            return;
+        }
+    }
+    if (bibl->nr_genuri_literare >= 10) {
+        printf("Nu mai pot fi adaugate alte sectiuni!\n");
+        return;
+    }
+    sectiune nou = aloc_sectiune();
+    init_sectiune(nou, nume);
+    bibl->sectiuni[bibl->nr_genuri_literare] = nou;
+    bibl->nr_genuri_literare++;
 }
 
 void free_sectiune(sectiune sect) {
     free(sect->nume);
     free(sect->carti);
     free(sect);
-}
-
-biblioteca aloc_bibl() {
-    biblioteca bibl = malloc(sizeof(struct bibl));
-    if (bibl == NULL) {
-        printf ("Eroare la alocare");
-        return NULL;
-    }
-    bibl->nr_carti = 0;
-    bibl->nr_genuri_literare = 0;
-    bibl->Nume = malloc(100);
-    bibl->toate_cartile = malloc(1000 * sizeof(carte));
-    bibl->sectiuni = malloc(10 * sizeof(sectiune));
-    if (bibl->sectiuni == NULL) {
-        printf ("Eroare la alocare");
-        return NULL;
-    }
-    return bibl;
-}
-
-void init_bibl (biblioteca bibl, int nr_genuri, char *nume) {
-    bibl->nr_carti = 0;
-    bibl->nr_genuri_literare = nr_genuri;
-    for (int i = 0; i < bibl->nr_genuri_literare; i++) {
-        bibl->sectiuni[i] = aloc_sectiune();
-    }
-    strcpy(bibl->Nume, nume);
-}
-
-void free_bibl (biblioteca bibl) {
-    free(bibl->Nume);
-    bibl->Nume = NULL;
-    free(bibl->toate_cartile);
-    for (int i = 0; i < bibl->nr_genuri_literare; i++) {
-
-    }
-    free(bibl);
 }
 
 carte aloc_carte() {
@@ -74,9 +55,13 @@ carte aloc_carte() {
     }
     book->nr_pagini = 0;
     book->titlu = malloc(50);
+    book->titlu[49] = '\0';
     book->autor = malloc(50);
+    book->autor[49] = '\0';
     book->editura = malloc(50);
+    book->editura[49] = '\0';
     book->sectiune = malloc(50);
+    book->sectiune[49] = '\0';
     return book;
 }
 
@@ -130,6 +115,66 @@ void free_cititor(cititor reader) {
     free(reader);
 }
 
+biblioteca aloc_bibl() {
+    biblioteca bibl = malloc(sizeof(struct bibl));
+    if (bibl == NULL) {
+        printf ("Eroare la alocare");
+        return NULL;
+    }
+    bibl->nr_carti = 0;
+    bibl->nr_genuri_literare = 0;
+    bibl->nr_cititori = 0;
+    bibl->Nume = malloc(100);
+    bibl->toate_cartile = malloc(1000 * sizeof(carte));
+    bibl->sectiuni = malloc(10 * sizeof(sectiune));
+    if (bibl->sectiuni == NULL) {
+        printf ("Eroare la alocare");
+        return NULL;
+    }
+    bibl->cititori = malloc(100 * sizeof(cititor));
+    if (bibl->cititori == NULL) {
+        printf ("Eroare la alocare");
+        return NULL;
+    }
+    return bibl;
+}
+
+void init_bibl (biblioteca bibl, int nr_genuri, char *nume, int nr_max_cititori) {
+    bibl->nr_carti = 0;
+    bibl->nr_genuri_literare = nr_genuri;
+    for (int i = 0; i < bibl->nr_genuri_literare; i++) {
+        bibl->sectiuni[i] = aloc_sectiune();
+        if (bibl->sectiuni[i]) {
+            char nume_sect[20];
+            sprintf(nume_sect, "Sectiune_%d", i+1);
+            init_sectiune(bibl->sectiuni[i], nume_sect);
+        }
+    }
+    bibl->nr_max_cititori = 100;
+    if(nr_max_cititori > 100) {
+        cititor *c = realloc(bibl->cititori, nr_max_cititori * sizeof(cititor));
+        bibl->cititori = c;
+        bibl->nr_max_cititori = nr_max_cititori;
+    }
+    for(int i = 0; i < nr_max_cititori; i++) {
+        bibl->cititori[i] = NULL;
+    }
+    strcpy(bibl->Nume, nume);
+    bibl->Nume[99] = '\0';
+}
+
+void free_bibl (biblioteca bibl) {
+    free(bibl->Nume);
+    bibl->Nume = NULL;
+    free(bibl->toate_cartile);
+    for (int i = 0; i < bibl->nr_genuri_literare; i++) {
+        free_sectiune(bibl->sectiuni[i]);
+    }
+    free(bibl->sectiuni);
+    free(bibl->cititori);
+    free(bibl);
+}
+
 void afisez_carte(carte book) {
     printf("Titlu: %s\n", book->titlu);
     printf("Autor: %s\n", book->autor);
@@ -174,9 +219,31 @@ void adaug_carte(carte book, biblioteca bibl, char* sectiune) {
     book->index_biblioteca = bibl->nr_carti;
     bibl->nr_carti++;
     for (int i = 0; i < bibl->nr_genuri_literare; i++) {
-        if(strcmp(bibl->sectiuni[i]->nume, sectiune) == 0) {
+        if(bibl->sectiuni[i] && strcmp(bibl->sectiuni[i]->nume, sectiune) == 0) {
             bibl->sectiuni[i]->carti[bibl->sectiuni[i]->nr_carti] = book;
             bibl->sectiuni[i]->nr_carti++;
+            return;
         }
     }
+    printf("Sectiunea %s nu exista!\n", sectiune);
+}
+
+void adaug_cititor(biblioteca bibl, cititor reader) {
+    if (bibl->nr_cititori + 1 >= bibl->nr_max_cititori) {
+        bibl->nr_max_cititori *= 2;
+    }
+    bibl->cititori[bibl->nr_cititori] = reader;
+    bibl->nr_cititori++;
+    reader->nr_permis_biblioteca = bibl->nr_cititori;
+}
+
+void imprumut_carte(carte book, cititor reader, biblioteca bibl) {
+    if (reader->nr_carti_imprumutate >= 10) {
+        printf ("Cititorul a imprumutat deja numarul maxim de carti disponibile!\n");
+        return;
+    }
+    reader->carti_imprumutate[reader->nr_carti_imprumutate] = book;
+    reader->nr_carti_imprumutate++;
+
+    bibl->carti_impr_per_cititor[reader->nr_permis_biblioteca - 1]++;
 }

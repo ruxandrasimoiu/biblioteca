@@ -5,12 +5,13 @@
 
 int main(){
     biblioteca bib = aloc_bibl();
-    // int nr_carti = 100;
+    // // int nr_carti = 100;
     int nr_genuri = 6;
+    int nr_cititori = 5;
     char* nume = malloc(50);
-    // nume = "Biblioteca lui Ruxi";
+    // // nume = "Biblioteca lui Ruxi";
     strcpy(nume, "Biblioteca lui Ruxi");
-    init_bibl(bib, nr_genuri, nume);
+    init_bibl(bib, nr_genuri, nume, nr_cititori);
     afisez_biblioteca(bib);
 
     printf("\n");
@@ -49,10 +50,17 @@ int main(){
     printf("----------------------------------------\n\n");
 
     adaug_carte(book, bib, sectiune);
+    adaug_sectiune(bib, sectiune);
+    adaug_carte(book, bib, sectiune);
+    afisez_sectune(bib, sectiune);
 
-    afisez_toate_cartile(bib);
-    
+    adaug_cititor(bib, reader);
+    afisez_cititor(bib->cititori[bib->nr_cititori - 1]);
+    // afisez_toate_cartile(bib);
 
+    printf("----------------------------------------\n\n");
+    imprumut_carte(book, reader, bib);
+    afisez_carte(reader->carti_imprumutate[reader->nr_carti_imprumutate - 1]);
     free_carte(book);
     free(titlu);
     free(autor);

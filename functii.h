@@ -4,10 +4,11 @@
 
 sectiune aloc_sectiune();
 void init_sectiune(sectiune sect, char* nume);
+void adaug_sectiune(biblioteca bibl, char *nume);
 void free_sectiune(sectiune sect);
 
 biblioteca aloc_bibl();
-void init_bibl(biblioteca b, int nr_genuri, char* nume);
+void init_bibl(biblioteca b, int nr_genuri, char* nume, int nr_max_cititori);
 void free_bibl(biblioteca bibl);
 
 carte aloc_carte();
@@ -25,6 +26,9 @@ void afisez_toate_cartile(biblioteca bib);
 void afisez_sectune(biblioteca bib, char* sectiune);
 
 void adaug_carte(carte book, biblioteca bibl, char* sectiune);
+void adaug_cititor(biblioteca bibl, cititor reader);
 
+
+void imprumut_carte(carte book, cititor reader, biblioteca bibl);
 
 #endif
