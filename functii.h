@@ -16,7 +16,7 @@ void init_carte(carte book, char* titlu, char* autor, char* sectiune, char* edit
 void free_carte(carte book);
 
 cititor aloc_cititor();
-void init_cititor(cititor reader, char* nume, int varsta, int nr_carti, int nr_permis);
+void init_cititor(cititor reader, char* nume, int varsta, int nr_permis);
 void free_cititor(cititor reader);
 
 void afisez_carte(carte book);
@@ -24,11 +24,18 @@ void afisez_cititor(cititor reader);
 void afisez_biblioteca(biblioteca bib);
 void afisez_toate_cartile(biblioteca bib);
 void afisez_sectune(biblioteca bib, char* sectiune);
+void afisez_imprumut (cititor reader);
 
 void adaug_carte(carte book, biblioteca bibl, char* sectiune);
 void adaug_cititor(biblioteca bibl, cititor reader);
 
 
 void imprumut_carte(carte book, cititor reader, biblioteca bibl);
+
+void return_carte(carte book, cititor reader, biblioteca bibl);
+
+void sterg_carte(carte book, biblioteca bibl);
+void sterg_cititor(cititor reader, biblioteca bibl);
+
 
 #endif

@@ -41,9 +41,9 @@ int main(){
     strcpy(nume_cititor, "Ruxi");
     int varsta = 19;
     int permis = 124;
-    int nr_carti_imp = 4;
+    // int nr_carti_imp = 4;
 
-    init_cititor(reader, nume_cititor, varsta, nr_carti_imp, permis);
+    init_cititor(reader, nume_cititor, varsta, permis);
 
     afisez_cititor(reader);
 
@@ -59,14 +59,24 @@ int main(){
     // afisez_toate_cartile(bib);
 
     printf("----------------------------------------\n\n");
-    imprumut_carte(book, reader, bib);
-    afisez_carte(reader->carti_imprumutate[reader->nr_carti_imprumutate - 1]);
-    free_carte(book);
+    // imprumut_carte(book, reader, bib);
+    // afisez_imprumut(reader);
+    // printf("----------------------------------------\n\n");
+    // return_carte(book, reader, bib);
+    // afisez_imprumut(reader);
+
+    sterg_carte(book, bib);
+    sterg_cititor(reader, bib);
+
+    
+    
+
+    // free_carte(book);
     free(titlu);
     free(autor);
     free(sectiune);
     free(editura);
-    free_cititor(reader);
+    // free_cititor(reader);
     free(nume);
     free_bibl(bib);
     free(nume_cititor);

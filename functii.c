@@ -102,9 +102,8 @@ cititor aloc_cititor() {
     return reader;
 }
 
-void init_cititor(cititor reader, char* nume, int varsta, int nr_carti, int nr_permis) {
+void init_cititor(cititor reader, char* nume, int varsta, int nr_permis) {
     reader->varsta = varsta;
-    reader->nr_carti_imprumutate = nr_carti;
     reader->nr_permis_biblioteca = nr_permis;
     strcpy(reader->nume, nume);
 }
@@ -214,6 +213,16 @@ void afisez_sectune(biblioteca bib, char* sectiune) {
     }
 }
 
+void afisez_imprumut (cititor reader) {
+    printf("Lista de carti imprumutate pentru cititorul %s este:\n", reader->nume);
+    printf("\n");
+    // printf("%d\n", reader->nr_carti_imprumutate);
+    for(int i = 0; i < reader->nr_carti_imprumutate; i++) {
+        afisez_carte(reader->carti_imprumutate[i]);
+        printf("\n");
+    }
+}
+
 void adaug_carte(carte book, biblioteca bibl, char* sectiune) {
     bibl->toate_cartile[bibl->nr_carti] = book;
     book->index_biblioteca = bibl->nr_carti;
@@ -246,4 +255,74 @@ void imprumut_carte(carte book, cititor reader, biblioteca bibl) {
     reader->nr_carti_imprumutate++;
 
     bibl->carti_impr_per_cititor[reader->nr_permis_biblioteca - 1]++;
+}
+
+void return_carte(carte book, cititor reader, biblioteca bibl) {
+    for (int i = 0; i < reader->nr_carti_imprumutate; i++) {
+        if (strcmp(reader->carti_imprumutate[i]->titlu, book->titlu) == 0) {
+            for(int j = i; j < reader->nr_carti_imprumutate - 1; j++) {
+                reader->carti_imprumutate[j] = reader->carti_imprumutate[j + 1];
+            }
+            bibl->carti_impr_per_cititor[reader->nr_permis_biblioteca]--;
+            reader->nr_carti_imprumutate--;
+            printf("Cititorul %s a returnat cartea %s!\n", reader->nume, book->titlu);
+            return;
+        }
+    }
+    printf("Cititorul %s nu a imprumutat cartea %s!\n", reader->nume, book->titlu);
+}
+
+void sterg_carte(carte book, biblioteca bibl) {
+    if(bibl == NULL || book == NULL) {
+        return;
+    }
+
+    for(int i = 0; i < bibl->nr_genuri_literare; i++) {
+        if(strcmp(bibl->sectiuni[i]->nume, book->sectiune) == 0) {
+            for(int j = 0; j < bibl->sectiuni[i]->nr_carti; j++) {
+                if(bibl->sectiuni[i]->carti[j] == book) {
+                    for(int k = j; k < bibl->sectiuni[i]->nr_carti - 1; k++) {
+                        bibl->sectiuni[i]->carti[k] = bibl->sectiuni[i]->carti[k + 1];
+                    }
+                    bibl->sectiuni[i]->nr_carti--;
+                    break;
+                }
+            }
+            break;
+        }
+    }
+    for(int i = 0; i < bibl->nr_carti; i++) {
+        if(bibl->toate_cartile[i] == book) {
+            for(int j = i; j < bibl->nr_carti - 1; j++) {
+                bibl->toate_cartile[j] = bibl->toate_cartile[j + 1];
+                bibl->toate_cartile[j]->index_biblioteca = j;
+            }
+            printf("Cartea %s a fost stearsa din biblioteca!\n", book->titlu);
+            free_carte(bibl->toate_cartile[i]);
+            bibl->nr_carti--;
+            return;
+        }
+    }
+    printf("Cartea %s nu exista in biblioteca!\n", book->titlu);
+}
+
+void sterg_cititor(cititor reader, biblioteca bibl) {
+    if(reader == NULL || bibl == NULL) return;
+    if(reader->nr_carti_imprumutate != 0) {
+        printf("Cititorul %s nu poate fi sters din baza de date pana nu returneaza toate cartile imprumutate!\n", reader->nume);
+        return;
+    }
+    for(int i = 0; i <bibl->nr_cititori; i++) {
+        if (bibl->cititori[i] == reader) {
+            for (int j = i; j < bibl->nr_cititori - 1; j++) {
+                bibl->cititori[j] = bibl->cititori[j + 1];
+                bibl->cititori[j]->nr_permis_biblioteca = j;
+            }
+            bibl->nr_cititori--;
+            printf("Cititorul %s a fost sters din baza de date a bibliotecii!\n", reader->nume);
+            free_cititor(bibl->cititori[i]);
+            return;
+        }
+    }
+    printf("Cititorul %s nu exista in baza de date a bibliotecii!\n", reader->nume);
 }
