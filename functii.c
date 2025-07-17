@@ -1,3 +1,5 @@
+// Copyright Ruxandra Simoiu 2025
+
 #include "functii.h"
 #include <stdio.h>
 #include <stdlib.h>

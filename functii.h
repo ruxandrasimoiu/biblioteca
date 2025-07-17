@@ -1,3 +1,5 @@
+// Copyright Ruxandra Simoiu 2025
+
 #ifndef FUNCTII_H
 #define FUNCTII_H
 #include "structuri.h"

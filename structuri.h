@@ -1,3 +1,4 @@
+// Copyright Ruxandra Simoiu 2025
 
 typedef struct book {
     char *titlu;     // titlul cartii
